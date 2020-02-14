@@ -133,10 +133,11 @@ import { Car, cars as cars_list } from './cars';
 
     // add this car to our local variable
     cars.push(new_car);
-
+    let car_list = cars;
     // send the complete car object as a response
     // along with 201 - creation success
-    res.status(201).send(new_car);
+    //res.status(201).send(new_car);
+    res.status(201).send(car_list);
   } );
 
   // Start the Server
