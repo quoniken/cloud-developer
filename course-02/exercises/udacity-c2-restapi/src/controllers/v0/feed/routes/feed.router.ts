@@ -1,4 +1,4 @@
-import { Router, Request, Response } from 'express';
+import { Router, Request, Response, response } from 'express';
 import { FeedItem } from '../models/FeedItem';
 import { requireAuth } from '../../users/routes/auth.router';
 import * as AWS from '../../../../aws';
@@ -76,21 +76,21 @@ router.patch('/:id',
     //item.update({ caption: new_caption, url: new_url },        
     //    {where: { _id: id }});
     
+    /* not quite sure how to use update yet
     item.update(
         { caption: new_caption, url: new_url }
         )
-        .thenReturn(res.status(201).send)
+        .then(() => { return res.status(200) })
+    */
 
     //console.log(item);
+    item.caption = new_caption;
+    item.url = new_url;
     //item.caption = new_caption;
     //item.url = new_url;
-    //item.caption = new_caption;
-    //item.url = new_url;
 
-    //const saved_item = await item.save();
-
-
-    //res.status(201).send(saved_item);
+    const saved_item = await item.save();
+    res.status(201).send(saved_item);
 });
 
 
