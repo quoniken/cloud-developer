@@ -32,7 +32,22 @@ async function comparePasswords(plainTextPassword: string, hash: string): Promis
 
 function generateJWT(user: User): string {
     //@TODO Use jwt to create a new JWT Payload containing
-    return jwt.sign(user, config.jwt.secret);
+
+    // following the video the below doesn't work
+    // but the version with user.toJSON() works.
+    //return jwt.sign(user, config.jwt.secret);
+
+    return jwt.sign(user.toJSON(), config.jwt.secret);
+
+    // saw someone ask about the below to see if 
+    // it's a correct, seems to work but the above is 
+    // one liner vs below 
+    // const plainUsrObj = {
+    //     email: user.email,
+    //     createdAt: user.createdAt,
+    //     updatedAt: user.updatedAt
+    // }
+    //return jwt.sign(plainUsrObj, config.jwt.secret);
 }
 
 export function requireAuth(req: Request, res: Response, next: NextFunction) {
