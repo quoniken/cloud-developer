@@ -1,4 +1,4 @@
-import { Router, Request, Response } from 'express';
+import { Router, Request, Response, response } from 'express';
 import { FeedItem } from '../models/FeedItem';
 import { requireAuth } from '../../users/routes/auth.router';
 import * as AWS from '../../../../aws';
@@ -18,13 +18,79 @@ router.get('/', async (req: Request, res: Response) => {
 
 //@TODO
 //Add an endpoint to GET a specific resource by Primary Key
+router.get('/:id', async (req: Request, res: Response) => {
+    let { id } = req.params;
+    
+    if(!id) {
+        return res.status(400).send(`id is required`);
+    }
+
+    const item = await FeedItem.findByPk(id);
+
+    res.status(200).send(item);
+});
+
 
 // update a specific resource
 router.patch('/:id', 
     requireAuth, 
     async (req: Request, res: Response) => {
         //@TODO try it yourself
-        res.send(500).send("not implemented")
+        //res.send(500).send("not implemented")
+    const { id } = req.params;
+
+    /* don't do this, means can be reassigned but 
+    function scoped, so can still access it later 
+    on but nothing is actually getting assigned?
+    let { new_caption } = req.body.caption;
+    let { new_url } = req.body.url;
+    */
+
+    //both the below works, 
+    //const new_caption = req.body.caption;
+    //const new_url =  req.body.url;    
+    let new_caption = req.body.caption;
+    let new_url = req.body.url;
+    
+    //console.log(req.body);
+
+    if(!id)
+    {
+        return res.status(400).send(`id is required`);
+    }
+
+    /*
+    console.log("new caption", new_caption);
+    console.log("new url", new_url);
+    console.log(typeof(req.body));
+    */
+
+    // check to make sure both aren't empty
+    if(new_caption.empty && new_url.empty)
+    {
+        return res.status(400).send(`caption and url field are empty`);
+    }
+       
+    // grab our item by id
+    const item = await FeedItem.findByPk(id);
+    //item.update({ caption: new_caption, url: new_url },        
+    //    {where: { _id: id }});
+    
+    /* not quite sure how to use update yet
+    item.update(
+        { caption: new_caption, url: new_url }
+        )
+        .then(() => { return res.status(200) })
+    */
+
+    //console.log(item);
+    item.caption = new_caption;
+    item.url = new_url;
+    //item.caption = new_caption;
+    //item.url = new_url;
+
+    const saved_item = await item.save();
+    res.status(201).send(saved_item);
 });
 
 
